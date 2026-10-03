@@ -1,12 +1,6 @@
 """
 NYC Taxi Pipeline DAG
 Orchestrates: AWS Glue transform -> Snowflake load -> dbt run/test
-
-This DAG demonstrates a production-style pattern: Airflow handles
-orchestration and scheduling, while each heavy tool (Spark via Glue,
-dbt) runs in its own isolated environment (Glue's managed environment,
-or a separate Docker container) rather than inside Airflow's own
-Python environment. This avoids dependency conflicts between tools.
 """
 
 from datetime import datetime, timedelta
@@ -36,10 +30,10 @@ with DAG(
     # --- Task 1: Trigger the AWS Glue job ---
     trigger_glue_job = GlueJobOperator(
         task_id="trigger_glue_job",
-        job_name="nyc_taxi_glue_transform",  # must match your actual Glue job name
+        job_name="nyc_taxi_glue_transform",  
         aws_conn_id="aws_default",
         region_name="ap-south-1",
-        wait_for_completion=False,  # we use a separate sensor task below instead
+        wait_for_completion=False, 
     )
 
     # --- Task 2: Wait for the Glue job to finish ---
@@ -48,8 +42,8 @@ with DAG(
         job_name="nyc_taxi_glue_transform",
         run_id="{{ ti.xcom_pull(task_ids='trigger_glue_job') }}",
         aws_conn_id="aws_default",
-        poke_interval=30,   # check every 30 seconds
-        timeout=1800,       # give up after 30 minutes (cost safety)
+        poke_interval=30,   
+        timeout=1800,       
     )
 
     # --- Task 3: Load the fresh processed data into Snowflake ---
@@ -71,15 +65,14 @@ with DAG(
     )
 
     # --- Task 4: Run dbt via the official dbt-labs Docker image ---
-    # This avoids installing dbt inside Airflow's own Python environment.
     dbt_run = DockerOperator(
         task_id="dbt_run",
         image="ghcr.io/dbt-labs/dbt-snowflake:1.8.latest",
         command="run --project-dir /usr/app --profiles-dir /root/.dbt",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        mount_tmp_dir=False,  # avoids trying to bind-mount a temp dir that only
-                              # exists inside the Airflow container, not on the host
+        mount_tmp_dir=False,  
+                              
         mounts=[
             Mount(
                 # IMPORTANT: because we're using docker.sock (docker-outside-of-docker),
