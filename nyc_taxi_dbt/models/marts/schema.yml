@@ -1,0 +1,25 @@
+# models/marts/schema.yml
+# Data quality tests for the business-facing mart layer.
+
+version: 2
+
+models:
+  - name: fct_trips
+    columns:
+      - name: pickup_date
+        tests:
+          - not_null
+
+      - name: payment_type_label
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Credit Card", "Cash", "No Charge", "Dispute", "Unknown", "Voided Trip"]
+
+      - name: total_revenue
+        tests:
+          - not_null
+
+      - name: trip_distance
+        tests:
+          - not_null

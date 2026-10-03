@@ -1,0 +1,30 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Data files (too large / not needed in repo)
+data/raw/*.parquet
+data/processed/
+
+# dbt
+nyc_taxi_dbt/target/
+nyc_taxi_dbt/logs/
+nyc_taxi_dbt/dbt_packages/
+
+# Airflow
+airflow/logs/
+airflow/.env
+airflow/plugins/__pycache__/
+
+# Environment/secrets
+.env
+*.env
+
+# Power BI (binary file, large)
+*.pbix
+
+# OS files
+.DS_Store
+Thumbs.db
