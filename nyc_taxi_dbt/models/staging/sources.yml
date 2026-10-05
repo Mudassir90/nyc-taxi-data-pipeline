@@ -5,5 +5,4 @@ sources:
     database: NYC_TAXI_DB
     schema: RAW
     tables:
-      - name: yellow_taxi_jan2026
       - name: yellow_taxi_2026_h1

@@ -14,7 +14,7 @@ final as(
     when 3 then 'No Charge'
     when 4 then 'Dispute'
     when 5 then 'Unknown'
-    when 6 then 'Vioded Trip'
+    when 6 then 'Voided Trip'
     else 'Unknown'
     end as payment_type_label,
     pickup_location_id,
