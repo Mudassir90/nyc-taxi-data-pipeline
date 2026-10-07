@@ -37,3 +37,7 @@ models:
       - name: trip_distance
         tests:
           - not_null
+
+      - name: passenger_count
+        tests:
+          - not_null

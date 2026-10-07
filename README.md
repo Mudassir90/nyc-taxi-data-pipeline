@@ -25,7 +25,7 @@ NYC TLC Parquet Files (local download)
             ▼
    Power BI Dashboard
 
-   Apache Airflow (Docker) orchestrates: Glue job → Snowflake load → dbt run
+   Apache Airflow (Docker) orchestrates: Glue job → Snowflake load → dbt run → dbt test
 ```
 
 ## 🛠️ Tech Stack
@@ -76,13 +76,23 @@ During initial exploration, several data quality issues were identified and expl
    venv\Scripts\activate
    pip install -r requirements.txt
    ```
-2. Download NYC Yellow Taxi parquet files into `data/raw/` (see `data/raw/README.md` for the source).
+2. Download the NYC Yellow Taxi Parquet files from the NYC TLC and upload them to your S3 raw-data location.
 3. Configure your own AWS and Snowflake credentials (see `.env.example` and `nyc_taxi_dbt/profiles.yml.example` — copy these to real `.env` / `profiles.yml` files, which are gitignored).
 4. Run the local exploration and transformation scripts under `src/`.
 5. Set up the AWS S3 bucket, Glue job, and Snowflake objects using the SQL/scripts under `sql/` and `glue/`.
 6. Run `dbt run` from the `nyc_taxi_dbt/` folder.
 7. Start Airflow: `cd airflow && docker-compose up -d`, then trigger the `nyc_taxi_pipeline` DAG from the UI at `localhost:8081`.
-8. Open `powerbi/nyc_taxi_dashboard.pbix` and point it at your Snowflake instance.
+8. A Power BI dashboard was built on top of the Snowflake mart layer. Dashboard screenshots are included in the documentation.
+
+## Pipeline Execution Order
+
+1. Upload raw NYC Taxi Parquet files to S3
+2. Trigger AWS Glue PySpark job
+3. Write cleaned data to processed S3
+4. Load processed data into Snowflake
+5. Run dbt transformations
+6. Run dbt data quality tests
+7. Consume marts in Power BI
 
 ## 📁 Project Structure
 

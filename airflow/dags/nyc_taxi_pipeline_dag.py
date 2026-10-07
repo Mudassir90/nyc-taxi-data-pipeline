@@ -21,7 +21,7 @@ with DAG(
     dag_id="nyc_taxi_pipeline",
     default_args=default_args,
     description="End-to-end NYC Taxi pipeline: Glue -> Snowflake -> dbt",
-    schedule=None,  # manual trigger for now; can set to a cron string later
+    schedule=None, 
     start_date=datetime(2026, 1, 1),
     catchup=False,
     tags=["nyc_taxi"],
@@ -67,7 +67,7 @@ with DAG(
     # --- Task 4: Run dbt via the official dbt-labs Docker image ---
     dbt_run = DockerOperator(
         task_id="dbt_run",
-        image="ghcr.io/dbt-labs/dbt-snowflake:1.8.latest",
+        image="ghcr.io/dbt-labs/dbt-snowflake:1.8.0",
         command="run --project-dir /usr/app --profiles-dir /root/.dbt",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -90,8 +90,30 @@ with DAG(
                 target="/root/.dbt",
                 type="bind",
             ),
+            ],
+            auto_remove="success",
+        )
+
+    dbt_test = DockerOperator(
+            task_id="dbt_test",
+            image="ghcr.io/dbt-labs/dbt-snowflake:1.8.0",
+            command="test --project-dir /usr/app --profiles-dir /root/.dbt",
+            docker_url="unix://var/run/docker.sock",
+            network_mode="bridge",
+            mount_tmp_dir=False,
+            mounts=[
+                Mount(
+                    source="...",
+                    target="/usr/app",
+                    type="bind",
+                ),
+                Mount(
+                    source="...",
+                    target="/root/.dbt",
+                    type="bind",
+                ),
         ],
         auto_remove="success",
     )
 
-    trigger_glue_job >> wait_for_glue >> load_to_snowflake >> dbt_run
+    trigger_glue_job >> wait_for_glue >> load_to_snowflake >> dbt_run >> dbt_test
