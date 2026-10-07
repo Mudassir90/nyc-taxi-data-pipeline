@@ -8,7 +8,7 @@ An end-to-end, production-style data pipeline built on 6 months (Jan–Jun 2026)
 NYC TLC Parquet Files (local download)
             │
             ▼
-   AWS S3 (raw data lake, partitioned by year/month)
+   AWS S3 (raw data lake)
             │
             ▼
    AWS Glue (PySpark) — cleaning, validation, derived columns
@@ -43,7 +43,7 @@ NYC TLC Parquet Files (local download)
 
 ## 📊 What the pipeline does
 
-1. **Ingests** 6 months of raw NYC Yellow Taxi trip data (~21.7M raw rows) into a partitioned S3 data lake.
+1. **Ingests** 6 months of raw NYC Yellow Taxi trip data (~21.6M raw rows) into a partitioned S3 data lake.
 2. **Cleans and transforms** the data with PySpark on AWS Glue: filters invalid records (negative fares, zero-distance trips, bad timestamps), standardizes categorical codes, and adds derived columns (trip duration, revenue, pickup hour/day).
 3. **Loads** the cleaned data into Snowflake via a Storage Integration (S3 → Snowflake, no manual upload).
 4. **Transforms** the warehouse data with dbt into a business-ready fact table (`fct_trips`), following a staging → marts layering pattern.

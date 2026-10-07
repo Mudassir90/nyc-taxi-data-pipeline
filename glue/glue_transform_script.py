@@ -71,10 +71,7 @@ df = df.withColumn(
     "pickup_day_of_week", F.date_format("tpep_pickup_datetime", "EEEE")
 ).withColumn(
     "total_revenue",
-    F.col("fare_amount")
-    + F.coalesce(F.col("tip_amount"), F.lit(0))
-    + F.coalesce(F.col("tolls_amount"), F.lit(0))
-)
+    F.col("total_amount"))
 
 # --- 8. Duration filter ---
 df = df.filter(
